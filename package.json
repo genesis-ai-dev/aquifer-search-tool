@@ -1,0 +1,77 @@
+{
+  "name": "aquifer-search-tool",
+  "displayName": "aquifer-search-tool",
+  "description": "Retrieve results from the Aquifer API",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aquifer-search-tool.showPanel",
+        "title": "Show Aquifer Panel",
+        "icon": "media/aquifer.svg"
+      }
+    ],
+    "menus": {
+      "activitybar/context": [
+        {
+          "command": "aquifer-search-tool.showPanel",
+          "group": "1_formation",
+          "when": "viewLocation == activitybar && view == aquifer-search-tool"
+        }
+      ]
+    },
+    "views": {
+      "aquifer-search-tool": [
+        {
+          "type": "webview",
+          "title": "Aquifer Search Tool",
+          "id": "aquifer-side-panel",
+          "name": "Aquifer Search Tool",
+          "icon": "media/aquifer.svg",
+          "contextualTitle": "Aquifer Search Tool"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aquifer-search-tool",
+          "title": "Aquifer Search Tool",
+          "icon": "media/aquifer.svg"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/node-fetch": "^2.6.11",
+    "@types/vscode": "^1.86.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.4",
+    "node-fetch": "^2.6.1"
+  }
+}
