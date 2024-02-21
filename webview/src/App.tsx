@@ -1,33 +1,18 @@
 import { vscode } from './utilities/vscode';
 import { useState, useEffect } from 'react';
-import { VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
-
-interface ItemGrouping {
-  type: string;
-  name: string;
-  collectionTitle: string;
-  collectionCode: string;
-}
-
-interface SearchResultItem {
-  id: number;
-  name: string;
-  localizedName: string;
-  mediaType: string;
-  languageCode: string;
-  grouping: ItemGrouping;
-}
-
-interface SearchResult {
-  totalItemCount: number;
-  returnedItemCount: number;
-  offset: number;
-  items: SearchResultItem[];
-}
+import {
+  VSCodeDropdown,
+  VSCodeOption,
+  VSCodeBadge,
+} from '@vscode/webview-ui-toolkit/react';
+import ParsedTipTapHTML from './components/ParsedTipTapHTML';
 
 function App() {
   const [parsedData, setData] = useState<SearchResult | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(
+    null,
+  );
   const [passage, setPassage] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +26,11 @@ function App() {
     }
     // Post message with dynamic command based on the input's name
     vscode.postMessage({ command: `search-${name}`, data: value });
+  };
+
+  const handleSelectItem = (item: SearchResultItem) => {
+    setSelectedItem(item);
+    vscode.postMessage({ command: 'retrieve-item-by-id', data: item.id });
   };
 
   useEffect(() => {
@@ -82,33 +72,49 @@ function App() {
         />
       </header>
 
-      <div className="search-display">
-        <VSCodeDropdown>
-          {parsedData?.items &&
-            parsedData.items.length > 0 &&
-            parsedData.items.map((item) => (
-              <VSCodeOption key={item.id} value={item.id.toString()}>
-                {item.name}
-              </VSCodeOption>
-            ))}
-        </VSCodeDropdown>
-        <pre>{JSON.stringify(parsedData, null, 2)}</pre>
-      </div>
-
-      {/* <div className="search-display">
-        <div className="results-list">
-          {JSON.parse(parsedData).items.map((item: SearchResultProps) => (
-            <SearchResult
-              key={item.id}
-              id={item.id}
-              name={item.name}
-              localizedName={item.localizedName}
-              mediaType={item.mediaType}
-              // Pass other necessary data to the SearchResult component
-            />
-          ))}
+      <div
+        className="search-display"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}
+      >
+        <div
+          className="search-header"
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '1rem',
+          }}
+        >
+          <VSCodeDropdown>
+            {parsedData?.items &&
+              parsedData.items.length > 0 &&
+              parsedData.items.map((item) => (
+                <VSCodeOption
+                  key={item.id}
+                  value={item.id.toString()}
+                  onClick={() => handleSelectItem(item)}
+                >
+                  {item.name}
+                </VSCodeOption>
+              ))}
+          </VSCodeDropdown>
+          <VSCodeBadge>{parsedData?.totalItemCount || 0}</VSCodeBadge>
         </div>
-      </div> */}
+        <div
+          className="search-results"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+          }}
+        >
+          <ParsedTipTapHTML jsonContent={selectedItem} />
+          <pre>{JSON.stringify(parsedData, null, 2)}</pre>
+        </div>
+      </div>
     </div>
   );
 }

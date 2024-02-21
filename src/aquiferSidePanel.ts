@@ -65,14 +65,16 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
     }
 
     private setWebviewMessageListener(webview: vscode.Webview, uri: vscode.Uri) {
-        webview.onDidReceiveMessage(            async (message) => {
+        webview.onDidReceiveMessage(
+            async (message) => {
                 const data = message.data;
                 switch (message.command) {
                     case 'search-searchTerm':
                         console.log('searchTerm from webview:', data);
                         // Insert data into query field of searchTerms
                         if (data) {
-                            this.searchTerms = { ...this.searchTerms, query: data };                        } else {
+                            this.searchTerms = { ...this.searchTerms, query: data };
+                        } else {
                             // Delete query field from searchTerms if it exists
                             if (this.searchTerms) {
                                 delete this.searchTerms.query;
@@ -83,7 +85,7 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
                     case 'search-passage':
                         console.log('passage from webview:', data);
                         const passage: ScriptureReference = parseScriptureReference(data);
-                        if (passage.bookCode) {  
+                        if (passage.bookCode) {
                             this.searchTerms = {
                                 ...this.searchTerms,
                                 bookCode: passage.bookCode,
@@ -104,13 +106,17 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
                         }
                         await this.searchResources(webview);
                         break;
+                    case 'retrieve-item-by-id':
+                        console.log('retrieve-item-by-id from webview:', data);
+                        const item = await this.aquifer.getResource(data);
+                        break;
                     default:
                         console.log('Received message from webview:', data);
                         break;
 
-                    
+
                 }
-                
+
             }
         );
     }
