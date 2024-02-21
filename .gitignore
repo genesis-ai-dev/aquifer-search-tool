@@ -7,3 +7,4 @@ webview/node_modules
 webview/dist
 .env
 /webview/tsconfig.tsbuildinfo
+/webview/pnpm-lock.yaml

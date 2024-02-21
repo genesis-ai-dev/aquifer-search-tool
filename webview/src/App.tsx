@@ -1,34 +1,34 @@
-import { vscode } from "./utilities/vscode";
+import { vscode } from './utilities/vscode';
 import { useState, useEffect } from 'react';
+import { VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
 
-// interface SearchResultProps {
-//   id: number;
-//   name: string;
-//   localizedName: string;
-//   mediaType: string;
-//   // Add other props as needed
-// }
+interface ItemGrouping {
+  type: string;
+  name: string;
+  collectionTitle: string;
+  collectionCode: string;
+}
 
+interface SearchResultItem {
+  id: number;
+  name: string;
+  localizedName: string;
+  mediaType: string;
+  languageCode: string;
+  grouping: ItemGrouping;
+}
 
+interface SearchResult {
+  totalItemCount: number;
+  returnedItemCount: number;
+  offset: number;
+  items: SearchResultItem[];
+}
 
 function App() {
-  const [parsedData, setData] = useState('');
+  const [parsedData, setData] = useState<SearchResult | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [passage, setPassage] = useState('');
-
-  // const SearchResult = (parsedData: SearchResultProps) => {
-  //   const name = parsedData.name;
-  //   // Add other properties as needed
-    
-  //   return (
-  //     <div className="search-result">
-  //       <h3>{name}</h3>
-  //       {/* Display other information as needed */}
-        
-  //       {/* Add a thumbnail and a link if required */}
-  //     </div>
-  //   );
-  // };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target; // Destructure for easier access
@@ -43,13 +43,12 @@ function App() {
     vscode.postMessage({ command: `search-${name}`, data: value });
   };
 
-
   useEffect(() => {
     const handleReceiveMessage = (event: MessageEvent) => {
       const message = event.data;
       switch (message.command) {
         case 'sendData': {
-          const data: string = message.data;
+          const data: SearchResult = message.data;
           setData(data);
           console.log('Passage string parsed:', parsedData);
           break;
@@ -62,19 +61,21 @@ function App() {
     };
   }, [parsedData]);
 
+  console.log('RYDER', parsedData);
+
   return (
     <div className="App">
       <header className="App-header">
-        <input 
-          type="text" 
-          placeholder="Bible Passage..." 
+        <input
+          type="text"
+          placeholder="Bible Passage..."
           value={passage}
           onChange={handleInputChange}
           name="passage"
         />
-        <input 
-          type="text" 
-          placeholder="Search..." 
+        <input
+          type="text"
+          placeholder="Search..."
           value={searchTerm}
           onChange={handleInputChange}
           name="searchTerm"
@@ -82,7 +83,16 @@ function App() {
       </header>
 
       <div className="search-display">
-        <pre>Search Term: {JSON.stringify(parsedData, null, 2)}</pre>
+        <VSCodeDropdown>
+          {parsedData?.items &&
+            parsedData.items.length > 0 &&
+            parsedData.items.map((item) => (
+              <VSCodeOption key={item.id} value={item.id.toString()}>
+                {item.name}
+              </VSCodeOption>
+            ))}
+        </VSCodeDropdown>
+        <pre>{JSON.stringify(parsedData, null, 2)}</pre>
       </div>
 
       {/* <div className="search-display">
@@ -99,7 +109,6 @@ function App() {
           ))}
         </div>
       </div> */}
-      
     </div>
   );
 }
