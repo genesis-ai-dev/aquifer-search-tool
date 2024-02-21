@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vscode/codicons": "^0.0.35",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "react": "link:@vscode/webview-ui-toolkit/react",
     "react-dom": "^18.2.0"

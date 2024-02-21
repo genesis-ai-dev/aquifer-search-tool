@@ -6,7 +6,8 @@ import { Aquifer, searchParams } from './utilities/AquiferRequest';
 
 export class AquiferSidePanel implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
-    public static readonly viewType = 'aquiferSidePanel';    private extensionUri: vscode.Uri;
+    public static readonly viewType = 'aquiferSidePanel';
+    private extensionUri: vscode.Uri;
     private aquifer = new Aquifer();
     private searchTerms?: searchParams;
 
@@ -14,11 +15,11 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
         this.extensionUri = extensionUri;
     }
 
-    public resolveWebviewView(
+    public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
         token: vscode.CancellationToken,
-    ): void | Thenable<void> {
+    ): Promise<void> {
         this._view = webviewView;
 
         webviewView.webview.options = {
@@ -34,6 +35,7 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
     private getWebviewContent(webview: vscode.Webview) {
         const scriptUri = getUri(webview, this.extensionUri, ['webview', 'dist', 'assets', 'index.js']);
         const stylesUri = getUri(webview, this.extensionUri, ['webview', 'dist', 'assets', 'index.css']);
+        const codiconsStyleUri = getUri(webview, this.extensionUri, ['node_modules', 'vscode-codicons', 'dist', 'codicon.css']);
         const nonce = getNonce();
 
         return `
@@ -44,6 +46,7 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}'; style-src ${webview.cspSource};">
               <link href="${stylesUri}" rel="stylesheet">
+              <link href="${codiconsStyleUri}" rel="stylesheet">
               <title>Dictionary Table</title>
           </head>
           <body>
@@ -55,23 +58,21 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
     }
 
     private async searchResources(webview: vscode.Webview) {
-        // Set searchTerms language to eng and resourceType to None
+        // FIXME: Set searchTerms language to eng and resourceType to None - need a language dropdown in the webview
         this.searchTerms = { ...this.searchTerms, languageCode: 'eng', resourceType: 'None' };
         const searchResults = await this.aquifer.searchResources(this.searchTerms);
         webview.postMessage({ command: 'sendData', data: searchResults });
     }
 
     private setWebviewMessageListener(webview: vscode.Webview, uri: vscode.Uri) {
-        webview.onDidReceiveMessage(
-            async (message) => {
+        webview.onDidReceiveMessage(            async (message) => {
                 const data = message.data;
                 switch (message.command) {
                     case 'search-searchTerm':
                         console.log('searchTerm from webview:', data);
                         // Insert data into query field of searchTerms
                         if (data) {
-                            this.searchTerms = { ...this.searchTerms, query: data };
-                        } else {
+                            this.searchTerms = { ...this.searchTerms, query: data };                        } else {
                             // Delete query field from searchTerms if it exists
                             if (this.searchTerms) {
                                 delete this.searchTerms.query;
