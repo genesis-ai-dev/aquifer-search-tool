@@ -1,6 +1,7 @@
 // Importing node-fetch to use fetch in a Node.js environment
 import fetch, { Headers, RequestInit } from 'node-fetch';
 import 'dotenv/config';
+import { getDecodedKey } from '.';
 
 export type searchParams = {
     query?: string,
@@ -18,11 +19,9 @@ export type searchParams = {
 
 export class Aquifer {
     private baseUrl: string = 'https://api.aquifer.bible';
-    // private static apiKey: string = process.env.AQUIFER_API_KEY!;
-    private static apiKey: string = "api-key-here"; //******************************************************************************************************* */
+    private static apiKey: string = getDecodedKey();
 
-    constructor() {}
-
+    constructor() { }
     private async makeRequest(endpoint: string, params: any = {}, method: string = 'GET'): Promise<any> {
         const url = new URL(`${this.baseUrl}${endpoint}`);
         const headers = new Headers();
@@ -35,7 +34,7 @@ export class Aquifer {
 
         const requestOptions = {
             method,
-            headers: {'api-key': Aquifer.apiKey},
+            headers: { 'api-key': Aquifer.apiKey },
             body: method !== 'GET' ? JSON.stringify(params) : undefined,
         };
 

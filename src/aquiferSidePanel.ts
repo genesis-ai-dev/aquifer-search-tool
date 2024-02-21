@@ -1,14 +1,12 @@
 import * as vscode from 'vscode';
-import { getUri } from './utilities/getUri';
-import { getNonce } from './utilities/getNonce';
+import { getUri, getNonce } from './utilities';
 import { parseScriptureReference, ScriptureReference } from './utilities/ScriptureRef';
 import { Aquifer, searchParams } from './utilities/AquiferRequest';
 
 
 export class AquiferSidePanel implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
-    public static readonly viewType = 'aquiferSidePanel';
-    private extensionUri: vscode.Uri;
+    public static readonly viewType = 'aquiferSidePanel';    private extensionUri: vscode.Uri;
     private aquifer = new Aquifer();
     private searchTerms?: searchParams;
 

@@ -6,7 +6,7 @@ export type ScriptureReference = {
     endVerse: number;
   };
 
-  const bookCodes = {
+  const bookCodes = { // FIXME: merge with bookCodes in codex-editor repo
     'GEN': ['Gen', 'Gn', '1M'],
     'EXO': ['Ex', '2M'],
     'LEV': ['Lev', 'Lv', '3M'],
