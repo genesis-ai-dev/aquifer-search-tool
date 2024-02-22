@@ -1,29 +1,38 @@
 import { vscode } from './utilities/vscode';
 import { useState, useEffect } from 'react';
-import { VSCodeOption, VSCodeBadge } from '@vscode/webview-ui-toolkit/react';
+import {
+  VSCodeOption,
+  VSCodeBadge,
+  VSCodeTextField,
+  VSCodeProgressRing,
+} from '@vscode/webview-ui-toolkit/react';
 import ParsedTipTapHTML from './components/ParsedTipTapHTML';
 import MediaTypeTag from './components/MediaTypeTag';
+import './App.css';
 
 function App() {
   const [parsedData, setData] = useState<SearchResult | null>(null);
   const [itemContent, setItemContent] = useState<ResourceResult | undefined>();
   const [searchTerm, setSearchTerm] = useState('');
   const [passage, setPassage] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // New loading state
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target; // Destructure for easier access
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleInputChange = (e: any) => {
+    const target = e.target as HTMLInputElement;
+    const { name, value } = target;
 
-    // Update the state based on the input's name attribute
     if (name === 'searchTerm') {
-      setSearchTerm(value);
+      setSearchTerm(value.trim());
     } else if (name === 'passage') {
-      setPassage(value);
+      setPassage(value.trim());
     }
-    // Post message with dynamic command based on the input's name
+    setIsLoading(true); // Set loading to true when sending a message
     vscode.postMessage({ command: `search-${name}`, data: value });
   };
 
   const handleSelectItem = (item: SearchResultItem) => {
+    setIsLoading(true); // Set loading to true when sending a message
     vscode.postMessage({ command: 'retrieve-item-by-id', data: item.id });
   };
 
@@ -35,12 +44,11 @@ function App() {
           const data: SearchResult | ResourceResult = message.data;
 
           if ('totalItemCount' in data) {
-            setData(data); // This is a list of results
+            setData(data);
           } else {
             setItemContent(data);
           }
-
-          console.log('Passage string parsed:', parsedData);
+          setIsLoading(false); // Set loading to false when data is received
           break;
         }
       }
@@ -49,7 +57,7 @@ function App() {
     return () => {
       window.removeEventListener('message', handleReceiveMessage);
     };
-  }, [parsedData]);
+  }, []);
 
   console.log('RYDER', parsedData);
 
@@ -71,7 +79,7 @@ function App() {
           gap: '1rem',
         }}
       >
-        <input
+        {/* <input
           type="text"
           placeholder="Bible Passage..."
           value={passage}
@@ -84,9 +92,18 @@ function App() {
           value={searchTerm}
           onChange={handleInputChange}
           name="searchTerm"
+        /> */}
+        <VSCodeTextField
+          value={searchTerm}
+          onChange={handleInputChange}
+          name="searchTerm"
+        />
+        <VSCodeTextField
+          value={passage}
+          onChange={handleInputChange}
+          name="passage"
         />
       </header>
-
       <div
         className="search-display"
         style={{
@@ -103,39 +120,55 @@ function App() {
             flexFlow: 'row wrap',
             gap: '1rem',
             backgroundColor: 'var(--vscode-editor-inactiveSelectionBackground)',
+            justifyContent: 'center',
           }}
         >
-          <VSCodeBadge>{parsedData?.totalItemCount || 0}</VSCodeBadge>
-          {parsedData?.items &&
-            parsedData.items.length > 0 &&
-            parsedData.items.map((item) => (
-              <VSCodeOption
-                style={{
-                  display: 'flex',
-                  flexFlow: 'row wrap',
-                  gap: '1rem',
-                }}
-                key={item.id}
-                value={item.id.toString()}
-                onClick={() => handleSelectItem(item)}
-              >
-                {item.name}
-                <MediaTypeTag mediaType={item.mediaType} />
-              </VSCodeOption>
-            ))}
+          {(isLoading && <VSCodeProgressRing />) || (
+            <>
+              <VSCodeBadge>{parsedData?.totalItemCount || 0}</VSCodeBadge>
+              {parsedData?.items &&
+                parsedData.items.length > 0 &&
+                parsedData.items.map((item) => (
+                  <VSCodeOption
+                    style={{
+                      display: 'flex',
+                      flexFlow: 'row wrap',
+                      gap: '1rem',
+                    }}
+                    key={item.id}
+                    value={item.id.toString()}
+                    onClick={() => handleSelectItem(item)}
+                  >
+                    {item.name}
+                    <MediaTypeTag mediaType={item.mediaType} />
+                  </VSCodeOption>
+                ))}
+            </>
+          )}
         </div>
-        <div
-          className="selected-item-display"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            backgroundColor: 'var(--vscode-editor-inactiveSelectionBackground)',
-          }}
-        >
-          <ParsedTipTapHTML jsonContent={itemContent} />
-          <pre>{JSON.stringify(itemContent, null, 2)}</pre>
-        </div>
+        {(isLoading && <VSCodeProgressRing />) || (
+          <div
+            className="selected-item-display"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              backgroundColor:
+                'var(--vscode-editor-inactiveSelectionBackground)',
+            }}
+          >
+            {parsedData ? (
+              itemContent ? (
+                <ParsedTipTapHTML jsonContent={itemContent} />
+              ) : (
+                'Please select a resource from the results above'
+              )
+            ) : (
+              'Please search for resources above'
+            )}
+            <pre>{JSON.stringify(itemContent, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </div>
   );

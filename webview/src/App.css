@@ -1,0 +1,75 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+.App-header {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-display {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+.search-results-header,
+.selected-item-display {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+}
+
+input {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border-color: var(--vscode-input-border);
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+}
+
+button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+}
+
+.custom-button {
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: var(--vscode-button-background);
+}
+
+.search-results-header {
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+}
+
+.selected-item-display {
+  background: linear-gradient(
+    to bottom,
+    var(--vscode-editor-inactiveSelectionBackground),
+    var(--vscode-editor-background)
+  );
+}
+
+.search-results-header {
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--vscode-editor-inactiveSelectionBackground) 0%,
+    var(--vscode-editor-background) 100%
+  );
+}
