@@ -1,18 +1,13 @@
 import { vscode } from './utilities/vscode';
 import { useState, useEffect } from 'react';
-import {
-  VSCodeDropdown,
-  VSCodeOption,
-  VSCodeBadge,
-} from '@vscode/webview-ui-toolkit/react';
+import { VSCodeOption, VSCodeBadge } from '@vscode/webview-ui-toolkit/react';
 import ParsedTipTapHTML from './components/ParsedTipTapHTML';
+import MediaTypeTag from './components/MediaTypeTag';
 
 function App() {
   const [parsedData, setData] = useState<SearchResult | null>(null);
+  const [itemContent, setItemContent] = useState<ResourceResult | undefined>();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(
-    null,
-  );
   const [passage, setPassage] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +24,6 @@ function App() {
   };
 
   const handleSelectItem = (item: SearchResultItem) => {
-    setSelectedItem(item);
     vscode.postMessage({ command: 'retrieve-item-by-id', data: item.id });
   };
 
@@ -38,8 +32,14 @@ function App() {
       const message = event.data;
       switch (message.command) {
         case 'sendData': {
-          const data: SearchResult = message.data;
-          setData(data);
+          const data: SearchResult | ResourceResult = message.data;
+
+          if ('totalItemCount' in data) {
+            setData(data); // This is a list of results
+          } else {
+            setItemContent(data);
+          }
+
           console.log('Passage string parsed:', parsedData);
           break;
         }
@@ -54,8 +54,23 @@ function App() {
   console.log('RYDER', parsedData);
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <div
+      className="App"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        width: '100%',
+      }}
+    >
+      <header
+        className="App-header"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '1rem',
+        }}
+      >
         <input
           type="text"
           placeholder="Bible Passage..."
@@ -78,41 +93,48 @@ function App() {
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem',
+          padding: '1rem 0',
         }}
       >
         <div
-          className="search-header"
+          className="search-results-header"
           style={{
             display: 'flex',
-            flexDirection: 'row',
+            flexFlow: 'row wrap',
             gap: '1rem',
+            backgroundColor: 'var(--vscode-editor-inactiveSelectionBackground)',
           }}
         >
-          <VSCodeDropdown>
-            {parsedData?.items &&
-              parsedData.items.length > 0 &&
-              parsedData.items.map((item) => (
-                <VSCodeOption
-                  key={item.id}
-                  value={item.id.toString()}
-                  onClick={() => handleSelectItem(item)}
-                >
-                  {item.name}
-                </VSCodeOption>
-              ))}
-          </VSCodeDropdown>
           <VSCodeBadge>{parsedData?.totalItemCount || 0}</VSCodeBadge>
+          {parsedData?.items &&
+            parsedData.items.length > 0 &&
+            parsedData.items.map((item) => (
+              <VSCodeOption
+                style={{
+                  display: 'flex',
+                  flexFlow: 'row wrap',
+                  gap: '1rem',
+                }}
+                key={item.id}
+                value={item.id.toString()}
+                onClick={() => handleSelectItem(item)}
+              >
+                {item.name}
+                <MediaTypeTag mediaType={item.mediaType} />
+              </VSCodeOption>
+            ))}
         </div>
         <div
-          className="search-results"
+          className="selected-item-display"
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
+            backgroundColor: 'var(--vscode-editor-inactiveSelectionBackground)',
           }}
         >
-          <ParsedTipTapHTML jsonContent={selectedItem} />
-          <pre>{JSON.stringify(parsedData, null, 2)}</pre>
+          <ParsedTipTapHTML jsonContent={itemContent} />
+          <pre>{JSON.stringify(itemContent, null, 2)}</pre>
         </div>
       </div>
     </div>

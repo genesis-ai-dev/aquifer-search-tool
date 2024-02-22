@@ -33,9 +33,11 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
     }
 
     private getWebviewContent(webview: vscode.Webview) {
+        const styleVSCodeUri = getUri(webview, this.extensionUri, ["src", "assets", "vscode.css"]);
+        const styleResetUri = getUri(webview, this.extensionUri, ["src", "assets", "reset.css"]);
         const scriptUri = getUri(webview, this.extensionUri, ['webview', 'dist', 'assets', 'index.js']);
         const stylesUri = getUri(webview, this.extensionUri, ['webview', 'dist', 'assets', 'index.css']);
-        const codiconsStyleUri = getUri(webview, this.extensionUri, ['node_modules', 'vscode-codicons', 'dist', 'codicon.css']);
+        const codiconsStyleUri = getUri(webview, this.extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
         const nonce = getNonce();
 
         return `
@@ -44,7 +46,10 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}'; style-src ${webview.cspSource};">
+              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; style-src 'unsafe-inline' ${webview.cspSource};">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link href="${styleResetUri}" rel="stylesheet">
+              <link href="${styleVSCodeUri}" rel="stylesheet">
               <link href="${stylesUri}" rel="stylesheet">
               <link href="${codiconsStyleUri}" rel="stylesheet">
               <title>Dictionary Table</title>
@@ -64,10 +69,16 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
         webview.postMessage({ command: 'sendData', data: searchResults });
     }
 
+    private async getResourceById(id: number) {
+        const resource = await this.aquifer.getResource(id);
+        this._view?.webview.postMessage({ command: 'sendData', data: resource });
+    }
+
     private setWebviewMessageListener(webview: vscode.Webview, uri: vscode.Uri) {
         webview.onDidReceiveMessage(
             async (message) => {
                 const data = message.data;
+                console.log('RECEIVING MESSAGE:', message.command, data);
                 switch (message.command) {
                     case 'search-searchTerm':
                         console.log('searchTerm from webview:', data);
@@ -108,7 +119,7 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
                         break;
                     case 'retrieve-item-by-id':
                         console.log('retrieve-item-by-id from webview:', data);
-                        const item = await this.aquifer.getResource(data);
+                        await this.getResourceById(data);
                         break;
                     default:
                         console.log('Received message from webview:', data);

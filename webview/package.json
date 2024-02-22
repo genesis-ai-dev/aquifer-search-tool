@@ -10,6 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tiptap/core": "^2.2.3",
+    "@tiptap/extension-document": "^2.2.3",
+    "@tiptap/extension-highlight": "^2.2.3",
+    "@tiptap/extension-image": "^2.2.3",
+    "@tiptap/extension-link": "^2.2.3",
+    "@tiptap/extension-subscript": "^2.2.3",
+    "@tiptap/extension-superscript": "^2.2.3",
+    "@tiptap/extension-text-style": "^2.2.3",
+    "@tiptap/extension-underline": "^2.2.3",
+    "@tiptap/html": "^2.2.3",
+    "@tiptap/react": "^2.2.3",
+    "@tiptap/starter-kit": "^2.2.3",
     "@vscode/codicons": "^0.0.35",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "react": "link:@vscode/webview-ui-toolkit/react",
