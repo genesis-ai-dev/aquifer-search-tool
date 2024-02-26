@@ -1,0 +1,159 @@
+:root {
+  --editor-background-color: var(--vscode-editor-background);
+  --editor-text-color: var(--vscode-foreground);
+  --editor-input-background-color: var(--vscode-input-background);
+  --editor-input-border-color: var(--vscode-input-border);
+  --editor-button-background-color: var(--vscode-button-background);
+  --editor-button-hover-background-color: var(--vscode-button-hoverBackground);
+  --editor-focus-border-color: var(--vscode-focusBorder);
+  --editor-font-family: var(--vscode-font-family);
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.5rem;
+  height: 2.5rem;
+  background-color: #f8f8f8;
+  border-bottom: 0.0625rem solid #e0e0e0;
+}
+
+.toolbar-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  width: 1.5rem;
+  border: none;
+  background-color: transparent;
+  color: var(--vscode-toolbar-activeBackground);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.toolbar-item.spaced {
+  margin-right: 0.25rem; /* Adjusted to rem */
+}
+
+.toolbar-item[disabled] {
+  cursor: not-allowed;
+}
+
+.toolbar-item[disabled] > i {
+  color: var(--vscode-titleBar-inactiveForeground);
+}
+
+.toolbar-item > i {
+  color: var(--vscode-toolbar-activeForeground);
+}
+
+.toolbar-item > i:hover {
+  color: var(--vscode-foreground);
+}
+
+.toolbar-item > i:active {
+  color: var(--vscode-foreground);
+}
+
+.toolbar-item > i:disabled {
+  color: var(--vscode-disabledForeground);
+}
+
+.toolbar-item > i:disabled:hover {
+  color: var(--vscode-disabledForeground);
+}
+
+.toolbar-item > i:disabled:active {
+  color: var(--vscode-disabledForeground);
+}
+
+.editor-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: auto;
+}
+
+/* General Styles for the Editor */
+.editor-input {
+  font-family: var(--editor-font-family);
+  background-color: var(--editor-input-background-color);
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+/* Style for Book Title */
+.editor-input p[data-usx-style='id'] {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2aa198;
+  margin-bottom: 1rem;
+}
+
+/* Style for the Book Name (e.g., Psalms) */
+.editor-input p[data-usx-style='h'] {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #268bd2;
+  margin-bottom: 0.75rem;
+}
+
+/* Style for Chapter Number */
+.editor-input span[data-usx-style='c'] {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #d33682;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+/* Style for Main Section Titles */
+.editor-input p[data-usx-style='ms1'] {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #859900;
+  margin-top: 1.25rem;
+  margin-bottom: 0.625rem;
+}
+
+/* Style for Quotations */
+.editor-input p[data-usx-style='q1'],
+.editor-input p[data-usx-style='q2'] {
+  font-style: italic;
+  margin-left: 1.25rem;
+}
+
+/* Additional indent for deeper quotations */
+.editor-input p[data-usx-style='q2'] {
+  margin-left: 2.5rem;
+}
+
+/* Style for Verse Numbers */
+.editor-input span[data-usx-style='v'] {
+  font-weight: bold;
+  color: #b58900;
+  margin-right: 0.25rem;
+}
+
+/* Hover effect for interactive elements */
+.editor-input span[data-lexical-text='true']:hover,
+.editor-input span[data-lexical-decorator='true']:hover {
+  background-color: #eee8d5;
+  cursor: pointer;
+}
+
+/* Focus effect for interactive elements */
+.editor-input span[data-lexical-text='true']:focus,
+.editor-input span[data-lexical-decorator='true']:focus {
+  background-color: var(--editor-input-background-color);
+  outline: 0.125rem solid var(--editor-focus-border-color);
+}
