@@ -1,16 +1,16 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import { Mark } from '@tiptap/core';
+import { Mark } from "@tiptap/core";
 // import { useEditor, EditorContent } from '@tiptap/react';
-import Highlight from '@tiptap/extension-highlight';
-import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
-import Subscript from '@tiptap/extension-subscript';
-import Superscript from '@tiptap/extension-superscript';
-import TextStyle from '@tiptap/extension-text-style';
-import Underline from '@tiptap/extension-underline';
-import StarterKit from '@tiptap/starter-kit';
-import { generateHTML } from '@tiptap/html';
+import Highlight from "@tiptap/extension-highlight";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
+import TextStyle from "@tiptap/extension-text-style";
+import Underline from "@tiptap/extension-underline";
+import StarterKit from "@tiptap/starter-kit";
+import { generateHTML } from "@tiptap/html";
 
 const extensions = [
   StarterKit,
@@ -21,8 +21,8 @@ const extensions = [
   Subscript,
   Superscript,
   TextStyle,
-  Mark.create({ name: 'bibleReference', renderHTML: () => ['span'] }),
-  Mark.create({ name: 'resourceReference', renderHTML: () => ['span'] }),
+  Mark.create({ name: "bibleReference", renderHTML: () => ["span"] }),
+  Mark.create({ name: "resourceReference", renderHTML: () => ["span"] }),
 ];
 
 interface TipTapNode {
@@ -46,13 +46,13 @@ interface TipTapNode {
 
 function stripReferenceTypesFromTipTapJSON(
   json: TipTapNode,
-  typesToStrip: string[] = ['bibleReference', 'resourceReference'],
+  typesToStrip: string[] = ["bibleReference", "resourceReference"]
 ) {
   function traverseAndStrip(obj: TipTapNode): TipTapNode | null {
-    if ('type' in obj && obj.type && typesToStrip.includes(obj.type)) {
+    if ("type" in obj && obj.type && typesToStrip.includes(obj.type)) {
       return null; // Strip out the node entirely if it's a reference type
     }
-    if ('content' in obj && Array.isArray(obj.content)) {
+    if ("content" in obj && Array.isArray(obj.content)) {
       obj.content = obj.content
         .map(traverseAndStrip)
         .filter(Boolean) as TipTapNode[];
@@ -74,9 +74,9 @@ const ParsedTipTapHTML: React.FC<ParsedTipTapHTMLProps> = ({ jsonContent }) => {
   const output = useMemo(() => {
     if (jsonContent?.content?.[0]) {
       const strippedContent = stripReferenceTypesFromTipTapJSON(
-        jsonContent.content[0]['tiptap'] as TipTapNode,
+        jsonContent.content[0]["tiptap"] as TipTapNode
       );
-      console.log('strippedContent:', strippedContent);
+      console.log("strippedContent:", strippedContent);
       return strippedContent && generateHTML(strippedContent, extensions);
     } else {
       return null;
