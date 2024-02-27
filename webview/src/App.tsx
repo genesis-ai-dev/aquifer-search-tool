@@ -1,12 +1,12 @@
 import { vscode } from "./utilities/vscode";
 import { useState, useEffect } from "react";
 import {
-  VSCodeOption,
   VSCodeBadge,
   VSCodeProgressRing,
   VSCodePanels,
   VSCodePanelView,
   VSCodePanelTab,
+  VSCodeButton,
 } from "@vscode/webview-ui-toolkit/react";
 import ParsedTipTapHTML from "./components/ParsedTipTapHTML";
 import MediaTypeTag from "./components/MediaTypeTag";
@@ -30,7 +30,7 @@ function App() {
     } else if (name === "passage") {
       setPassage(value.trim());
     }
-    setIsLoading(true); // Set loading to true when sending a message
+    // setIsLoading(true); // Set loading to true when sending a message
     vscode.postMessage({ command: `search-${name}`, data: value });
   };
 
@@ -48,7 +48,7 @@ function App() {
 
           if ("totalItemCount" in data) {
             setData(data);
-          } else {
+          } else if ("content" in data) {
             setItemContent(data);
           }
           setIsLoading(false); // Set loading to false when data is received
@@ -64,6 +64,23 @@ function App() {
 
   console.log("RYDER", parsedData);
 
+  const SearchDisplayWrapper: React.FC<{ children: React.ReactNode }> = ({
+    children,
+  }) => (
+    <div
+      className="search-display"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        padding: "1rem 0",
+      }}
+    >
+      {children}
+    </div>
+  );
+  const contentShouldBeDisplayed = itemContent;
+
   return (
     <div
       className="App"
@@ -71,7 +88,6 @@ function App() {
         display: "flex",
         flexDirection: "column",
         gap: "1rem",
-        width: "100%",
       }}
     >
       <VSCodePanels>
@@ -88,7 +104,6 @@ function App() {
             display: "flex",
             flexDirection: "column",
             gap: "0.5rem",
-            width: "100%",
           }}
         >
           <header
@@ -114,50 +129,95 @@ function App() {
               name="searchTerm"
             />
           </header>
-          <div
-            className="search-display"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              padding: "1rem 0",
-            }}
-          >
-            <div
-              className="search-results-header"
-              style={{
-                display: "flex",
-                flexFlow: "row wrap",
-                gap: "1rem",
-                backgroundColor:
-                  "var(--vscode-editor-inactiveSelectionBackground)",
-                justifyContent: "center",
-              }}
-            >
-              {(isLoading && <VSCodeProgressRing />) || (
-                <>
-                  <VSCodeBadge>{parsedData?.totalItemCount || 0}</VSCodeBadge>
-                  {parsedData?.items &&
-                    parsedData.items.length > 0 &&
-                    parsedData.items.map((item) => (
-                      <VSCodeOption
-                        style={{
-                          display: "flex",
-                          flexFlow: "row wrap",
-                          gap: "1rem",
-                        }}
-                        key={item.id}
-                        value={item.id.toString()}
-                        onClick={() => handleSelectItem(item)}
-                      >
-                        {item.name}
-                        <MediaTypeTag mediaType={item.mediaType} />
-                      </VSCodeOption>
-                    ))}
-                </>
-              )}
-            </div>
-            {(isLoading && <VSCodeProgressRing />) || (
+          {contentShouldBeDisplayed ? (
+            <>
+              <VSCodeButton onClick={() => setItemContent(undefined)}>
+                Back
+              </VSCodeButton>
+              <SearchDisplayWrapper>
+                {(isLoading && <VSCodeProgressRing />) || (
+                  <div
+                    className="selected-item-display"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                      backgroundColor:
+                        "var(--vscode-editor-inactiveSelectionBackground)",
+                      padding: "2.5em 3.5em 3.5em",
+                    }}
+                  >
+                    {parsedData ? (
+                      itemContent ? (
+                        <ParsedTipTapHTML jsonContent={itemContent} />
+                      ) : (
+                        "Please select a resource from the results above"
+                      )
+                    ) : (
+                      "Please search for resources above"
+                    )}
+                    {/* <pre>{JSON.stringify(itemContent, null, 2)}</pre> */}
+                  </div>
+                )}
+              </SearchDisplayWrapper>
+            </>
+          ) : (
+            <SearchDisplayWrapper>
+              <div
+                className="search-results-header"
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  backgroundColor:
+                    "var(--vscode-editor-inactiveSelectionBackground)",
+                  justifyContent: "center",
+                  flexFlow: "column nowrap",
+                }}
+              >
+                {(isLoading && <VSCodeProgressRing />) || (
+                  <>
+                    <VSCodeBadge>{parsedData?.totalItemCount || 0}</VSCodeBadge>
+                    {parsedData?.items &&
+                      parsedData.items.length > 0 &&
+                      parsedData.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="search-result-item"
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.5rem",
+                            cursor: "pointer",
+                            borderBottom:
+                              "1px solid var(--vscode-editor-inactiveSelectionBackground)",
+                            paddingBottom: "1rem",
+                            marginBottom: "1rem",
+                          }}
+                          onClick={() => handleSelectItem(item)}
+                        >
+                          <div
+                            style={{
+                              fontWeight: "bold",
+                              color: "var(--vscode-textLink-foreground)",
+                            }}
+                          >
+                            {item.name}
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "0.5rem",
+                              alignItems: "center",
+                            }}
+                          >
+                            <MediaTypeTag mediaType={item.mediaType} />
+                          </div>
+                        </div>
+                      ))}
+                  </>
+                )}
+              </div>
               <div
                 className="selected-item-display"
                 style={{
@@ -180,8 +240,8 @@ function App() {
                 )}
                 {/* <pre>{JSON.stringify(itemContent, null, 2)}</pre> */}
               </div>
-            )}
-          </div>
+            </SearchDisplayWrapper>
+          )}
         </VSCodePanelView>
         <VSCodePanelView
           id="Shared Editor"
@@ -189,7 +249,6 @@ function App() {
             display: "flex",
             flexDirection: "column",
             gap: "0.5rem",
-            width: "100%",
           }}
         >
           <SharedEditor />
