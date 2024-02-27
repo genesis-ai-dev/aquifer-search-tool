@@ -48,6 +48,17 @@ const CustomTextStyle = Extension.create({
           paddingBottom: {
             default: null,
             renderHTML: () => {
+              return { style: `padding-top: 1rem; padding-bottom: 1rem` };
+            },
+          },
+        },
+      },
+      {
+        types: ["paragraph"],
+        attributes: {
+          paddingBottom: {
+            default: null,
+            renderHTML: () => {
               return { style: `padding-bottom: 1rem` };
             },
           },
