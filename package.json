@@ -2,10 +2,11 @@
   "name": "aquifer-search-tool",
   "displayName": "aquifer-search-tool",
   "description": "Retrieve results from the Aquifer API",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.86.0"
   },
+  "publisher": "project-accelerate",
   "categories": [
     "Other"
   ],

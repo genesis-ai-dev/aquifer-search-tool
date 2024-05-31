@@ -21,6 +21,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [passage, setPassage] = useState("");
   const [isLoading, setIsLoading] = useState(false); // New loading state
+  const [isTranslationAvailable, setIsTranslationAvailable] = useState(false); // New state for translation availability
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleInputChange = (e: any) => {
@@ -72,6 +73,10 @@ function App() {
             setItemContent(data);
           }
           setIsLoading(false); // Set loading to false when data is received
+          break;
+        }
+        case "translationAvailable": {
+          setIsTranslationAvailable(true); // Set translation availability to true
           break;
         }
       }
@@ -153,9 +158,11 @@ function App() {
               <VSCodeButton onClick={() => setItemContent(undefined)}>
                 Back
               </VSCodeButton>
-              <VSCodeButton onClick={() => handleTranslationOfContent()}>
-                Translate This Document
-              </VSCodeButton>
+              {isTranslationAvailable && (
+                <VSCodeButton onClick={() => handleTranslationOfContent()}>
+                  Translate This Document
+                </VSCodeButton>
+              )}
               <SearchDisplayWrapper>
                 {(isLoading && <VSCodeProgressRing />) || (
                   <div

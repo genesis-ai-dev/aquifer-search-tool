@@ -32,6 +32,9 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
     webviewView.webview.html = this.getWebviewContent(webviewView.webview);
 
     this.setWebviewMessageListener(webviewView.webview, this.extensionUri);
+
+    // Check for the extension and notify the webview
+    this.checkForTranslationExtension(webviewView.webview);
   }
 
   private getWebviewContent(webview: vscode.Webview) {
@@ -162,5 +165,12 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
           break;
       }
     });
+  }
+
+  private checkForTranslationExtension(webview: vscode.Webview) {
+    const extension = vscode.extensions.getExtension("project-accelerate.ai-translate");
+    if (extension) {
+      webview.postMessage({ command: "translationAvailable" });
+    }
   }
 }
