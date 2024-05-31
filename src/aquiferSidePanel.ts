@@ -149,6 +149,14 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
           console.log("retrieve-item-by-id from webview:", data);
           await this.getResourceById(data);
           break;
+        case "translate-content":
+          console.log("translate-content from webview:", data);
+          await vscode.commands.executeCommand(
+            "aquifer.translate",
+            data.dataToTranslate,
+            data.documentId
+          );
+          break;
         default:
           console.log("Received message from webview:", data);
           break;

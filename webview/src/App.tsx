@@ -12,6 +12,8 @@ import ParsedTipTapHTML from "./components/ParsedTipTapHTML";
 import MediaTypeTag from "./components/MediaTypeTag";
 import "./App.css";
 import SharedEditor from "./components/SharedEditor";
+import { tiptapRawHTML } from "./components/ParsedTipTapHTML";
+import TurndownService from "turndown"; // Import Turndown
 
 function App() {
   const [parsedData, setData] = useState<SearchResult | null>(null);
@@ -37,6 +39,24 @@ function App() {
   const handleSelectItem = (item: SearchResultItem) => {
     setIsLoading(true); // Set loading to true when sending a message
     vscode.postMessage({ command: "retrieve-item-by-id", data: item.id });
+  };
+
+  const handleTranslationOfContent = () => {
+    const tiptapRaw =
+      itemContent && tiptapRawHTML({ jsonContent: itemContent });
+
+    if (tiptapRaw) {
+      const turndownService = new TurndownService();
+      const markdown = turndownService.turndown(tiptapRaw);
+      console.log({ markdown });
+      vscode.postMessage({
+        command: "translate-content",
+        data: {
+          documentId: itemContent?.name,
+          dataToTranslate: markdown.split("\n\n"),
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -80,7 +100,6 @@ function App() {
     </div>
   );
   const contentShouldBeDisplayed = itemContent;
-
   return (
     <div
       className="App"
@@ -133,6 +152,9 @@ function App() {
             <>
               <VSCodeButton onClick={() => setItemContent(undefined)}>
                 Back
+              </VSCodeButton>
+              <VSCodeButton onClick={() => handleTranslationOfContent()}>
+                Translate This Document
               </VSCodeButton>
               <SearchDisplayWrapper>
                 {(isLoading && <VSCodeProgressRing />) || (
