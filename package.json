@@ -2,7 +2,7 @@
   "name": "aquifer-search-tool",
   "displayName": "aquifer-search-tool",
   "description": "Retrieve results from the Aquifer API",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/genesis-ai-dev/aquifer-search-tool"
