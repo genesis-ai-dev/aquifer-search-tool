@@ -28,7 +28,13 @@
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "turndown": "^7.2.0"
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "turndown": "^7.2.0",
+    "node-fetch": "^2.6.1",
+    "whatwg-url": "^8.4.0",
+    "tr46": "^1.0.1",
+    "webidl-conversions": "^6.1.0",
+    "isomorphic-fetch": "^2.2.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",
