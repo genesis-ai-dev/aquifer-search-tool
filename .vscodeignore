@@ -1,11 +1,9 @@
-.vscode/**
-.vscode-test/**
-src/**
-.gitignore
-.yarnrc
-vsc-extension-quickstart.md
-**/tsconfig.json
-**/.eslintrc.json
-**/*.map
-**/*.ts
-**/.vscode-test.*
+# First ignore all files and dirs in the root directory
+**
+
+# Then make exceptions for certain files
+!webview/dist/**
+!out/**
+!media/**
+!LICENSE
+!README.md
