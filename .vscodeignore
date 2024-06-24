@@ -16,11 +16,11 @@
 !node_modules/webidl-conversions/**
 !node_modules/dotenv/**
 
-
 # Include specific HTML file in the webview
 !webview/index.html
 
 # Include specific CSS assets that are being fetched and not found
 !webview/assets/reset.css
 !webview/assets/vscode.css
-!node_modules/@vscode/codicons/dist/codicon.css
+!node_modules/@vscode/codicons/dist/**
+!webview/node_modules/@vscode/codicons/dist/**

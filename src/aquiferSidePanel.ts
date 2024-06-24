@@ -74,7 +74,7 @@ export class AquiferSidePanel implements vscode.WebviewViewProvider {
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; style-src 'unsafe-inline' ${webview.cspSource};">
+              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}'; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource};">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <link href="${styleResetUri}" rel="stylesheet">
               <link href="${styleVSCodeUri}" rel="stylesheet">

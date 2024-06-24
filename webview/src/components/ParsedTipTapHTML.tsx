@@ -83,46 +83,40 @@ const extensions = [
 ];
 
 interface ParsedTipTapHTMLProps {
-  jsonContent: ResourceResult | undefined;
+  jsonContent: ResourceResult;
 }
 
-export const tiptapRawHTML = ({
-  jsonContent,
-}: {
-  jsonContent: ResourceResult;
-}): string => {
-  const strippedContent = stripReferenceTypesFromTipTapJSON(
-    jsonContent?.content[0]["tiptap"] as TipTapNode
-  );
-  console.log("strippedContent:", strippedContent);
-  return strippedContent ? generateHTML(strippedContent, extensions) : "";
+export const tiptapRawHTML = (jsonContent: ResourceResult): string => {
+  if (jsonContent.grouping.mediaType === "Text" && jsonContent.content.tiptap) {
+    const strippedContent = stripReferenceTypesFromTipTapJSON(
+      jsonContent.content.tiptap as TipTapNode
+    );
+    return strippedContent ? generateHTML(strippedContent, extensions) : "";
+  }
+  return "";
 };
 
 const ParsedTipTapHTML: React.FC<ParsedTipTapHTMLProps> = ({ jsonContent }) => {
   const output = useMemo(() => {
-    if (jsonContent?.content?.[0]) {
+    if (jsonContent.grouping.mediaType === "Text" && jsonContent.content.tiptap) {
       const strippedContent = stripReferenceTypesFromTipTapJSON(
-        jsonContent.content[0]["tiptap"] as TipTapNode
+        jsonContent.content.tiptap as TipTapNode
       );
-      console.log("strippedContent:", strippedContent);
       return strippedContent && generateHTML(strippedContent, extensions);
-    } else {
-      return null;
     }
+    return null;
   }, [jsonContent]);
 
   if (!output) {
-    return <div>No content</div>;
+    return <div>No text content available</div>;
   }
 
   return (
-    <div>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: output,
-        }}
-      />
-    </div>
+    <div
+      dangerouslySetInnerHTML={{
+        __html: output,
+      }}
+    />
   );
 };
 export default ParsedTipTapHTML;

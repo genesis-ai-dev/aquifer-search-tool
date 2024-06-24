@@ -27,16 +27,34 @@ interface ResourceResult {
     id: number;
     name: string;
     localizedName: string;
-    content: Array<{
-        tiptap: {
+    content: {
+        tiptap?: {
             type: "doc";
             content: unknown[];
         };
-    }>;
+        url?: string;
+    };
     grouping: {
         type: string;
         name: string;
-        licenseInfo: null | string;
+        mediaType: MediaType;
+        licenseInfo: {
+            title: string;
+            copyright: {
+                holder: {
+                    name: string;
+                    url: string;
+                };
+            };
+            licenses: Array<{
+                eng: {
+                    name: string;
+                    url?: string;
+                };
+            }>;
+            showAdaptationNoticeForEnglish: boolean;
+            showAdaptationNoticeForNonEnglish: boolean;
+        };
     };
     language: {
         id: number;
@@ -45,4 +63,3 @@ interface ResourceResult {
         scriptDirection: number;
     };
 }
-
