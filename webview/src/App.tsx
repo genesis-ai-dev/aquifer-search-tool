@@ -29,10 +29,18 @@ function App() {
     const { name, value } = target;
 
     if (name === 'searchTerm') {
-      setSearchTerm(value.trim());
+      setSearchTerm(value);
     } else if (name === 'passage') {
-      setPassage(value.trim());
+      setPassage(value);
     }
+  };
+
+  const handleKeyDown = (e: any) => {
+    if (e.key !== 'Enter')  {
+      return;
+    }
+    const target = e.target as HTMLInputElement;
+    const { name, value } = target;
     vscode.postMessage({ command: `search-${name}`, data: value });
   };
 
@@ -154,6 +162,7 @@ function App() {
               placeholder="Bible Passage..."
               value={passage}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               name="passage"
             />
             <input
@@ -161,6 +170,7 @@ function App() {
               placeholder="Search..."
               value={searchTerm}
               onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
               name="searchTerm"
             />
           </header>
