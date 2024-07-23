@@ -43,17 +43,15 @@ const CustomTextStyle = Extension.create({
           },
         },
       },
-      {
-        types: ["heading"],
-        attributes: {
-          paddingBottom: {
-            default: null,
-            renderHTML: () => {
-              return { style: `padding-top: 1rem; padding-bottom: 1rem` };
-            },
-          },
-        },
-      },
+    ];
+  },
+});
+
+const CustomParagraph = Extension.create({
+  name: "customParagraph",
+
+  addGlobalAttributes() {
+    return [
       {
         types: ["paragraph"],
         attributes: {
@@ -61,6 +59,26 @@ const CustomTextStyle = Extension.create({
             default: null,
             renderHTML: () => {
               return { style: `padding-bottom: 1rem` };
+            },
+          },
+        },
+      },
+    ];
+  },
+});
+
+const CustomHeading = Extension.create({
+  name: "customHeading",
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: ["heading"],
+        attributes: {
+          paddingBottom: {
+            default: null,
+            renderHTML: () => {
+              return { style: `padding-top: 1rem; padding-bottom: 1rem` };
             },
           },
         },
@@ -78,6 +96,8 @@ const extensions = [
   Subscript,
   Superscript,
   CustomTextStyle, // Use your custom text style extension here
+  CustomParagraph,
+  CustomHeading,
   Mark.create({ name: "bibleReference", renderHTML: () => ["span"] }),
   Mark.create({ name: "resourceReference", renderHTML: () => ["span"] }),
 ];
