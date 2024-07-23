@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ImageResourceProps {
-  resource: ResourceResult;
+  resource: ImageResourceResult;
 }
 
 const ImageResource: React.FC<ImageResourceProps> = ({ resource }) => {

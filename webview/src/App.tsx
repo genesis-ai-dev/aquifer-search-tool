@@ -110,7 +110,7 @@ function App() {
       case 'Text':
         return <ParsedTipTapHTML jsonContent={itemContent} />;
       case 'Image':
-        return <ImageResource resource={itemContent} />;
+        return <ImageResource resource={itemContent as ImageResourceResult} />;
       default:
         return <div>Unsupported media type: {itemContent.grouping.mediaType}</div>;
     }

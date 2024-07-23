@@ -87,9 +87,9 @@ interface ParsedTipTapHTMLProps {
 }
 
 export const tiptapRawHTML = (jsonContent: ResourceResult): string => {
-  if (jsonContent.grouping.mediaType === "Text" && jsonContent.content.tiptap) {
+  if (jsonContent.grouping.mediaType === "Text" && jsonContent.content[0].tiptap) {
     const strippedContent = stripReferenceTypesFromTipTapJSON(
-      jsonContent.content.tiptap as TipTapNode
+      jsonContent.content[0].tiptap as TipTapNode
     );
     return strippedContent ? generateHTML(strippedContent, extensions) : "";
   }
@@ -98,9 +98,9 @@ export const tiptapRawHTML = (jsonContent: ResourceResult): string => {
 
 const ParsedTipTapHTML: React.FC<ParsedTipTapHTMLProps> = ({ jsonContent }) => {
   const output = useMemo(() => {
-    if (jsonContent.grouping.mediaType === "Text" && jsonContent.content.tiptap) {
+    if (jsonContent.grouping.mediaType === "Text" && jsonContent.content[0].tiptap) {
       const strippedContent = stripReferenceTypesFromTipTapJSON(
-        jsonContent.content.tiptap as TipTapNode
+        jsonContent.content[0].tiptap as TipTapNode
       );
       return strippedContent && generateHTML(strippedContent, extensions);
     }
