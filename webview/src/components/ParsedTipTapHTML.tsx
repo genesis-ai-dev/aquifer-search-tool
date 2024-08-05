@@ -7,7 +7,7 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
-// import TextStyle from '@tiptap/extension-text-style';
+import TextStyle from '@tiptap/extension-text-style';
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { generateHTML } from "@tiptap/html";
@@ -43,17 +43,15 @@ const CustomTextStyle = Extension.create({
           },
         },
       },
-      {
-        types: ["heading"],
-        attributes: {
-          paddingBottom: {
-            default: null,
-            renderHTML: () => {
-              return { style: `padding-top: 1rem; padding-bottom: 1rem` };
-            },
-          },
-        },
-      },
+    ];
+  },
+});
+
+const CustomParagraph = Extension.create({
+  name: "customParagraph",
+
+  addGlobalAttributes() {
+    return [
       {
         types: ["paragraph"],
         attributes: {
@@ -61,6 +59,26 @@ const CustomTextStyle = Extension.create({
             default: null,
             renderHTML: () => {
               return { style: `padding-bottom: 1rem` };
+            },
+          },
+        },
+      },
+    ];
+  },
+});
+
+const CustomHeading = Extension.create({
+  name: "customHeading",
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: ["heading"],
+        attributes: {
+          paddingBottom: {
+            default: null,
+            renderHTML: () => {
+              return { style: `padding-top: 1rem; padding-bottom: 1rem` };
             },
           },
         },
@@ -77,7 +95,10 @@ const extensions = [
   Highlight,
   Subscript,
   Superscript,
+  TextStyle,
   CustomTextStyle, // Use your custom text style extension here
+  CustomParagraph,
+  CustomHeading,
   Mark.create({ name: "bibleReference", renderHTML: () => ["span"] }),
   Mark.create({ name: "resourceReference", renderHTML: () => ["span"] }),
 ];
@@ -87,9 +108,9 @@ interface ParsedTipTapHTMLProps {
 }
 
 export const tiptapRawHTML = (jsonContent: ResourceResult): string => {
-  if (jsonContent.grouping.mediaType === "Text" && jsonContent.content.tiptap) {
+  if (jsonContent.grouping.mediaType === "Text" && jsonContent.content[0].tiptap) {
     const strippedContent = stripReferenceTypesFromTipTapJSON(
-      jsonContent.content.tiptap as TipTapNode
+      jsonContent.content[0].tiptap as TipTapNode
     );
     return strippedContent ? generateHTML(strippedContent, extensions) : "";
   }
@@ -98,9 +119,9 @@ export const tiptapRawHTML = (jsonContent: ResourceResult): string => {
 
 const ParsedTipTapHTML: React.FC<ParsedTipTapHTMLProps> = ({ jsonContent }) => {
   const output = useMemo(() => {
-    if (jsonContent.grouping.mediaType === "Text" && jsonContent.content.tiptap) {
+    if (jsonContent.grouping.mediaType === "Text" && jsonContent.content[0].tiptap) {
       const strippedContent = stripReferenceTypesFromTipTapJSON(
-        jsonContent.content.tiptap as TipTapNode
+        jsonContent.content[0].tiptap as TipTapNode
       );
       return strippedContent && generateHTML(strippedContent, extensions);
     }
