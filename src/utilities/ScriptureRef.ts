@@ -77,6 +77,8 @@ export type ScriptureReference = {
 
  export function parseScriptureReference(input: string): ScriptureReference {
     // Normalize the input string
+    // TODO: Reconsider space stripping for a more fully featured
+    // reference parser; see what other extensions have done
     const normalizedInput = input.replace(/\s+/g, '').toUpperCase();
 
     // Updated regex to match book, chapters, and verses
@@ -90,7 +92,7 @@ export type ScriptureReference = {
     const [, bookPrefix, bookName, startChapter, startVerse, endChapterOrVerse, endVerse] = match;
 
     // Normalize book name for comparison
-    const fullBookName = `${bookPrefix || ''}${bookName}`.toUpperCase();
+    const fullBookName = `${bookPrefix || ''}${bookName}`.toUpperCase().trim();
 
     // Determine the book code
     let bookCode = '';
@@ -101,6 +103,10 @@ export type ScriptureReference = {
     }
     }
   
+    if (!bookCode) {
+      bookCode = fullBookName in bookCodes ? fullBookName : '';
+    }
+
     // Parse numbers
     const startChap = parseInt(startChapter) || 0;
     let endChap = startChap;
