@@ -6,4 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- TBD
+
+## [0.0.7]
+
+- Fix loading of text resources [#5](https://github.com/genesis-ai-dev/aquifer-search-tool/pull/5)
+- Improve term / passage search UX [#7](https://github.com/genesis-ai-dev/aquifer-search-tool/pull/7)
